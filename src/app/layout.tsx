@@ -22,7 +22,6 @@ const _geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Math Generator",
   description: "Gerador de contas matemáticas",
-  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
