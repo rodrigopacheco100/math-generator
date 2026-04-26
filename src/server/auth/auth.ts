@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { getDb } from "@/lib/db";
 import { env } from "@/lib/env";
-import { users } from "@/lib/schemas";
+import { getDb } from "../db/db";
+import { users } from "../db/schemas";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [

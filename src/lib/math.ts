@@ -1,4 +1,4 @@
-import type { DifficultyType } from "./schemas";
+import type { DifficultyType } from "../server/db/schemas/enums";
 
 export type Difficulty = DifficultyType;
 export const translatedDifficulty: Record<Difficulty, string> = {

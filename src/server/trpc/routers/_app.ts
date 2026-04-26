@@ -1,7 +1,7 @@
 import { createTRPCRouter } from "../init";
-import { answersRouter } from "./answers.submitAnswer";
+import { answersRouter } from "./answers";
 import { settingsRouter } from "./settings";
-import { statsRouter } from "./stats.getStats";
+import { statsRouter } from "./stats";
 
 export const appRouter = createTRPCRouter({
   stats: statsRouter,

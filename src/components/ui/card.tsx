@@ -1,13 +1,13 @@
-import * as React from "react";
+import type * as React from "react";
 import { cn } from "@/lib/utils";
 
-function Card({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("rounded-xl border border-gray-200 bg-white shadow-sm", className)}
+      className={cn(
+        "rounded-xl border border-gray-200 bg-white shadow-sm",
+        className,
+      )}
       {...props}
     />
   );
@@ -17,7 +17,12 @@ function CardHeader({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("flex flex-col space-y-1.5 p-4", className)} {...props} />;
+  return (
+    <div
+      className={cn("flex flex-col space-y-1.5 p-4", className)}
+      {...props}
+    />
+  );
 }
 
 function CardTitle({

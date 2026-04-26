@@ -1,6 +1,6 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { Session } from "next-auth";
-import { auth } from "@/lib/auth/auth";
+import { auth } from "../auth/auth";
 
 export interface TRPCContext {
   session: Session | null;

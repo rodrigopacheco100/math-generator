@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 
 const modules: Module[] = [
@@ -121,7 +126,7 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
             "flex items-center gap-3 w-full px-4 py-4",
             pathname === "/"
               ? "bg-violet-100 text-violet-700"
-              : "text-gray-700 hover:bg-gray-100"
+              : "text-gray-700 hover:bg-gray-100",
           )}
         >
           <span className="w-6 text-center">🏠</span>
@@ -149,10 +154,13 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
                       className={cn(
                         "flex items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50",
                         pathname === op.href && "bg-violet-50 text-violet-600",
-                        opIndex !== module.operations.length - 1 && "border-b border-gray-100",
+                        opIndex !== module.operations.length - 1 &&
+                          "border-b border-gray-100",
                       )}
                     >
-                      <span className="w-6 text-center font-bold">{op.symbol}</span>
+                      <span className="w-6 text-center font-bold">
+                        {op.symbol}
+                      </span>
                       <span className="flex-1 text-left">{op.name}</span>
                     </Link>
                   ))}
@@ -180,7 +188,7 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
           "flex items-center gap-3 w-full px-3 py-4",
           pathname === "/"
             ? "bg-violet-100 text-violet-700"
-            : "text-gray-700 hover:bg-gray-100"
+            : "text-gray-700 hover:bg-gray-100",
         )}
       >
         <span className="w-6 text-center">🏠</span>
@@ -213,10 +221,13 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 text-sm transition-colors hover:bg-gray-100",
                       pathname === op.href && "bg-violet-500 text-white",
-                      opIndex !== module.operations.length - 1 && "border-b border-gray-100",
+                      opIndex !== module.operations.length - 1 &&
+                        "border-b border-gray-100",
                     )}
                   >
-                    <span className="w-6 text-center font-bold">{op.symbol}</span>
+                    <span className="w-6 text-center font-bold">
+                      {op.symbol}
+                    </span>
                     <span className="flex-1 text-left">{op.name}</span>
                   </Link>
                 ))}

@@ -1,9 +1,9 @@
 import "server-only";
 import { and, eq, gte, lt } from "drizzle-orm";
 import { z } from "zod";
-import { getDb } from "@/lib/db";
-import type { IntegerOperations } from "@/lib/math";
-import { answers, users } from "@/lib/schemas";
+import { getDb } from "../../db/db";
+import { answers, users } from "../../db/schemas";
+import type { OperationType } from "../../db/schemas/enums";
 import { createTRPCRouter, protectedProcedure } from "../init";
 
 const OPERATION_LABELS: Record<string, { name: string; symbol: string }> = {
@@ -51,7 +51,7 @@ async function getStatsForPeriod(
   userId: string,
   start: Date,
   end: Date,
-  operation?: IntegerOperations.Operation,
+  operation?: OperationType,
 ) {
   const where = operation
     ? and(
@@ -78,28 +78,6 @@ async function getStatsForPeriod(
 
 const inputSchema = z.object({
   period: z.enum(["daily", "weekly", "monthly"]).default("daily"),
-});
-
-const _outputSchema = z.object({
-  period: z.string(),
-  operations: z.array(
-    z.object({
-      operation: z.string(),
-      name: z.string(),
-      symbol: z.string(),
-      current: z.object({
-        totalAnswers: z.number(),
-        correctAnswers: z.number(),
-        accuracy: z.number(),
-      }),
-      previous: z.object({
-        totalAnswers: z.number(),
-        correctAnswers: z.number(),
-        accuracy: z.number(),
-      }),
-      comparison: z.number(),
-    }),
-  ),
 });
 
 export const getStats = protectedProcedure

@@ -1,7 +1,8 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { getDb } from "@/lib/db";
-import { type DifficultyType, userSettings, users } from "@/lib/schemas";
+import { getDb } from "../../db/db";
+import { userSettings, users } from "../../db/schemas";
+import type { DifficultyType } from "../../db/schemas/enums";
 import { createTRPCRouter, protectedProcedure } from "../init";
 
 const DifficultySchema = z.enum(["easy", "medium", "hard"]);

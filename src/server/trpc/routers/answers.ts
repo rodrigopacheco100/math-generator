@@ -2,9 +2,9 @@ import "server-only";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { getDb } from "@/lib/db";
-import type { Difficulty, IntegerOperations } from "@/lib/math";
-import { answers, users } from "@/lib/schemas";
+import { getDb } from "../../db/db";
+import { answers, users } from "../../db/schemas";
+import type { DifficultyType, OperationType } from "../../db/schemas/enums";
 import { createTRPCRouter, protectedProcedure } from "../init";
 
 const inputSchema = z.object({
@@ -51,13 +51,13 @@ export const submitAnswer = protectedProcedure
 
     await db.insert(answers).values({
       userId,
-      operation: operation as IntegerOperations.Operation,
+      operation: operation as OperationType,
       operand1,
       operand2,
       userAnswer,
       correctAnswer,
       isCorrect: isCorrect ? 1 : 0,
-      difficulty: difficulty as Difficulty,
+      difficulty: difficulty as DifficultyType,
     });
 
     return { isCorrect };

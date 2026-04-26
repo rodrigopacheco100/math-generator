@@ -5,8 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { AppMenu } from "@/components/AppMenu";
-import { LogoutButton } from "@/components/LogoutButton";
 import { MenuButton } from "@/components/MenuButton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useDevice } from "@/contexts/DeviceContext";
 
 export default function ClientLayout({
@@ -42,7 +41,7 @@ export default function ClientLayout({
     return map[pathname] || "Math Generator";
   };
 
-  const isHome = pathname === "/";
+  const _isHome = pathname === "/";
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -64,7 +63,10 @@ export default function ClientLayout({
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 outline-none">
+              <button
+                type="button"
+                className="flex items-center gap-2 outline-none"
+              >
                 <Avatar className="w-8 h-8 cursor-pointer">
                   <AvatarImage src={userImage || undefined} alt={userName} />
                   <AvatarFallback>

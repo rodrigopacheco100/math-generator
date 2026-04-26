@@ -1,9 +1,7 @@
 // Database module - only for server-side use
-// This file is excluded from client bundles by the Next.js webpack config
-
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import * as schema from "@/lib/schemas";
+import * as schema from "./schemas";
 
 let pool: Pool | null = null;
 let db: ReturnType<typeof drizzle> | null = null;

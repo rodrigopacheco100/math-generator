@@ -1,9 +1,11 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { useCallback, useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTRPC } from "@/client/client";
 import { KeyButton } from "@/components/ui/key-button";
+import { useUserDifficulty } from "@/hooks/useUserDifficulty";
 import {
   type Difficulty,
   generateProblem,
@@ -11,8 +13,6 @@ import {
   type MathProblem,
   operationSymbols,
 } from "@/lib/math";
-import { useUserDifficulty } from "@/lib/useUserDifficulty";
-import { useTRPC } from "@/trpc/client";
 
 type Operation = IntegerOperations.Operation;
 
@@ -20,7 +20,14 @@ interface OperationPageClientProps {
   operation: Operation;
 }
 
-const COLORS = ["#FF6B6B", "#FFD93D", "#6BCB77", "#4D96FF", "#FF6BFF", "#FF9F43"];
+const COLORS = [
+  "#FF6B6B",
+  "#FFD93D",
+  "#6BCB77",
+  "#4D96FF",
+  "#FF6BFF",
+  "#FF9F43",
+];
 
 function fireConfetti() {
   const particleCount = 60;
@@ -193,8 +200,8 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
               className={streakAnimation ? "animate-bounce inline-block" : ""}
             >
               🔥
-            </span>
-            {" "}Streak: {streak}
+            </span>{" "}
+            Streak: {streak}
           </span>
         </div>
 

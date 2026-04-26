@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { useTRPC } from "@/client/client";
 import { OperationCard } from "@/components/OperationCard";
 import { StatsCardSkeleton } from "@/components/StatsCardSkeleton";
 import {
@@ -11,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTRPC } from "@/trpc/client";
 
 type Period = "daily" | "weekly" | "monthly";
 
@@ -34,7 +34,10 @@ export function StatsClient() {
       <header className="bg-white px-5 pt-6 pb-4">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-500">Período:</span>
-          <Select value={period} onValueChange={(v: string) => setPeriod(v as Period)}>
+          <Select
+            value={period}
+            onValueChange={(v: string) => setPeriod(v as Period)}
+          >
             <SelectTrigger className="w-auto h-auto p-0 border-none bg-transparent shadow-none text-sm font-medium text-gray-800">
               <SelectValue />
             </SelectTrigger>

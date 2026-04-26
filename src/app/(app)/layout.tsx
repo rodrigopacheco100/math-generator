@@ -1,8 +1,8 @@
 // Server-only layout
 
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth/auth";
-import { ClientLayoutWrapper } from "./ClientLayoutWrapper";
+import { auth } from "@/server/auth/auth";
+import { ClientLayoutWrapper } from "./_components/ClientLayoutWrapper";
 
 export default async function AppLayout({
   children,

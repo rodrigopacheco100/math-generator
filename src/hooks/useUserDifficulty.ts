@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import type { DifficultyType } from "@/lib/schemas/enums";
-import { useTRPC } from "@/trpc/client";
+import { useTRPC } from "@/client/client";
+import type { DifficultyType } from "@/server/db/schemas/enums";
 
 const STORAGE_KEY = "math-difficulty";
 

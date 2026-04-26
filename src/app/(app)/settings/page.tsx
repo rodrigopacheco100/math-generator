@@ -3,10 +3,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { useTRPC } from "@/client/client";
 import { SelectCard } from "@/components/ui/select-card";
 import { IntegerOperations } from "@/lib/math";
-import type { DifficultyType } from "@/lib/schemas/enums";
-import { useTRPC } from "@/trpc/client";
+import type { DifficultyType } from "@/server/db/schemas/enums";
 
 const difficulties: DifficultyType[] = ["easy", "medium", "hard"];
 

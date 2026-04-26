@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Roboto } from "next/font/google";
 import "./globals.css";
-import { SessionProvider } from "@/components/SessionProvider";
-import { auth } from "@/lib/auth/auth";
+import { SessionProvider } from "next-auth/react";
+import { TRPCReactProvider } from "@/client/client";
 import { cn } from "@/lib/utils";
-import { TRPCReactProvider } from "@/trpc/client";
+import { auth } from "@/server/auth/auth";
 
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-sans" });
 
