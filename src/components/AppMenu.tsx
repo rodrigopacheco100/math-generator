@@ -1,10 +1,10 @@
 "use client";
 
-import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon, LockIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 
 const modules: Module[] = [
@@ -134,10 +134,10 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
           </button>
         </div>
 
-        <Accordion.Root type="multiple" className="flex-1 overflow-y-auto">
+        <Accordion type="multiple" className="flex-1 overflow-y-auto">
           {modules.map((module, moduleIndex) => (
-            <Accordion.Item key={module.id} value={module.id}>
-              <Accordion.Trigger
+            <AccordionItem key={module.id} value={module.id}>
+              <AccordionTrigger
                 disabled={module.locked}
                 className={cn(triggerClass, module.locked && "opacity-50")}
               >
@@ -150,8 +150,8 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
                 ) : (
                   <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
                 )}
-              </Accordion.Trigger>
-              <Accordion.Content className={contentClass}>
+              </AccordionTrigger>
+              <AccordionContent className={contentClass}>
                 <div className="flex flex-col">
                   {module.operations.map((op, opIndex) => (
                     <Link
@@ -173,13 +173,13 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
                     </Link>
                   ))}
                 </div>
-              </Accordion.Content>
+              </AccordionContent>
               {moduleIndex !== modules.length - 1 && (
                 <div className={separatorClass} />
               )}
-            </Accordion.Item>
+            </AccordionItem>
           ))}
-        </Accordion.Root>
+        </Accordion>
       </div>
     );
   }
@@ -190,10 +190,10 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
         <h1 className={titleClass}>Math Generator</h1>
       </div>
 
-      <Accordion.Root type="multiple" className="flex-1 overflow-y-auto">
+      <Accordion type="multiple" className="flex-1 overflow-y-auto">
         {modules.map((module, moduleIndex) => (
-          <Accordion.Item key={module.id} value={module.id}>
-            <Accordion.Trigger
+          <AccordionItem key={module.id} value={module.id}>
+            <AccordionTrigger
               disabled={module.locked}
               className={cn(
                 triggerClass,
@@ -212,8 +212,8 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
               ) : (
                 <ChevronDownIcon className="size-3.5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
               )}
-            </Accordion.Trigger>
-            <Accordion.Content className={contentClass}>
+            </AccordionTrigger>
+            <AccordionContent className={contentClass}>
               <div className="flex flex-col">
                 {module.operations.map((op, opIndex) => (
                   <Link
@@ -234,13 +234,13 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
                   </Link>
                 ))}
               </div>
-            </Accordion.Content>
+            </AccordionContent>
             {moduleIndex !== modules.length - 1 && (
               <div className={separatorClass} />
             )}
-          </Accordion.Item>
+          </AccordionItem>
         ))}
-      </Accordion.Root>
+      </Accordion>
     </aside>
   );
 }
