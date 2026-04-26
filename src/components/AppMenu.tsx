@@ -116,6 +116,7 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
 
         <Link
           href="/"
+          onClick={onClose}
           className={cn(
             "flex items-center gap-3 w-full px-4 py-4",
             pathname === "/"
