@@ -1,5 +1,6 @@
 import "server-only";
 import { and, eq, gte, lt } from "drizzle-orm";
+import { DateTime } from "luxon";
 import { z } from "zod";
 import { getDb } from "../../db/db";
 import { answers, users } from "../../db/schemas";
@@ -22,28 +23,31 @@ const OPERATIONS = [
 
 type Period = "daily" | "weekly" | "monthly";
 
+const USER_TIMEZONE = "America/Sao_Paulo";
+
+const PERIOD_CONFIG: Record<
+  Period,
+  { subtract: object; unit: "day" | "week" | "month" }
+> = {
+  daily: { subtract: { days: 1 }, unit: "day" },
+  weekly: { subtract: { weeks: 1 }, unit: "week" },
+  monthly: { subtract: { months: 1 }, unit: "month" },
+};
+
 function getDateRange(period: Period) {
-  const now = new Date();
-  const end = new Date(now);
-  const start = new Date(now);
-  const prevEnd = new Date(now);
-  const prevStart = new Date(now);
+  const now = DateTime.now().setZone(USER_TIMEZONE);
+  const config = PERIOD_CONFIG[period];
 
-  if (period === "daily") {
-    start.setDate(start.getDate() - 1);
-    prevEnd.setDate(prevEnd.getDate() - 1);
-    prevStart.setDate(prevStart.getDate() - 2);
-  } else if (period === "weekly") {
-    start.setDate(start.getDate() - 7);
-    prevEnd.setDate(prevEnd.getDate() - 7);
-    prevStart.setDate(prevStart.getDate() - 14);
-  } else if (period === "monthly") {
-    start.setMonth(start.getMonth() - 1);
-    prevEnd.setMonth(prevEnd.getMonth() - 1);
-    prevStart.setMonth(prevStart.getMonth() - 2);
-  }
+  const currentStart = now.startOf(config.unit);
+  const previousStart = now.minus(config.subtract).startOf(config.unit);
+  const previousEnd = now.minus(config.subtract).endOf(config.unit);
 
-  return { start, end, prevStart, prevEnd };
+  return {
+    start: currentStart.toJSDate(),
+    end: now.toJSDate(),
+    prevStart: previousStart.toJSDate(),
+    prevEnd: previousEnd.toJSDate(),
+  };
 }
 
 async function getStatsForPeriod(
