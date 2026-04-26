@@ -33,31 +33,96 @@ export namespace IntegerOperations {
     | "division";
 
   export interface OperationConfig {
-    easy: { min: number; max: number };
-    medium: { min: number; max: number };
-    hard: { min: number; max: number };
+    easy: {
+      operandMin: number;
+      operandMax: number;
+      operatorMin: number;
+      operatorMax: number;
+    };
+    medium: {
+      operandMin: number;
+      operandMax: number;
+      operatorMin: number;
+      operatorMax: number;
+    };
+    hard: {
+      operandMin: number;
+      operandMax: number;
+      operatorMin: number;
+      operatorMax: number;
+    };
   }
 
   export const operationConfig: Record<Operation, OperationConfig> = {
     addition: {
-      easy: { min: 1, max: 50 },
-      medium: { min: 51, max: 100 },
-      hard: { min: 101, max: 1000 },
+      easy: { operandMin: 1, operandMax: 50, operatorMin: 1, operatorMax: 50 },
+      medium: {
+        operandMin: 51,
+        operandMax: 100,
+        operatorMin: 51,
+        operatorMax: 100,
+      },
+      hard: {
+        operandMin: 101,
+        operandMax: 1000,
+        operatorMin: 101,
+        operatorMax: 1000,
+      },
     },
     subtraction: {
-      easy: { min: 1, max: 50 },
-      medium: { min: 51, max: 100 },
-      hard: { min: 101, max: 1000 },
+      easy: { operandMin: 1, operandMax: 50, operatorMin: 1, operatorMax: 50 },
+      medium: {
+        operandMin: 51,
+        operandMax: 100,
+        operatorMin: 51,
+        operatorMax: 100,
+      },
+      hard: {
+        operandMin: 101,
+        operandMax: 1000,
+        operatorMin: 101,
+        operatorMax: 1000,
+      },
     },
     multiplication: {
-      easy: { min: 1, max: 10 },
-      medium: { min: 11, max: 50 },
-      hard: { min: 51, max: 120 },
+      easy: {
+        operandMin: 10,
+        operandMax: 100,
+        operatorMin: 2,
+        operatorMax: 10,
+      },
+      medium: {
+        operandMin: 100,
+        operandMax: 2000,
+        operatorMin: 10,
+        operatorMax: 50,
+      },
+      hard: {
+        operandMin: 2000,
+        operandMax: 10000,
+        operatorMin: 50,
+        operatorMax: 200,
+      },
     },
     division: {
-      easy: { min: 1, max: 10 },
-      medium: { min: 11, max: 20 },
-      hard: { min: 21, max: 100 },
+      easy: {
+        operandMin: 10,
+        operandMax: 100,
+        operatorMin: 2,
+        operatorMax: 10,
+      },
+      medium: {
+        operandMin: 100,
+        operandMax: 2000,
+        operatorMin: 10,
+        operatorMax: 50,
+      },
+      hard: {
+        operandMin: 2000,
+        operandMax: 10000,
+        operatorMin: 50,
+        operatorMax: 200,
+      },
     },
   };
 
@@ -66,7 +131,7 @@ export namespace IntegerOperations {
     difficulty: Difficulty,
   ): string {
     const config = operationConfig[operation][difficulty];
-    return `${translatedDifficulty[difficulty]} (${config.min}-${config.max})`;
+    return `${translatedDifficulty[difficulty]}`;
   }
 
   export function generateProblem(
@@ -76,8 +141,11 @@ export namespace IntegerOperations {
     const config = operationConfig[operation][difficulty];
 
     if (operation === "division") {
-      const divisor = getRandomInt(1, Math.min(10, config.max));
-      const quotient = getRandomInt(config.min, config.max);
+      const divisor = getRandomInt(
+        config.operatorMin,
+        Math.min(10, config.operatorMax),
+      );
+      const quotient = getRandomInt(config.operatorMin, config.operatorMax);
       const dividend = divisor * quotient;
 
       return {
@@ -88,14 +156,13 @@ export namespace IntegerOperations {
       };
     }
 
-    const max = config.max;
-    const operand1 = getRandomInt(config.min, max);
+    const operand1 = getRandomInt(config.operandMin, config.operandMax);
 
     let operand2: number;
     if (operation === "subtraction") {
-      operand2 = getRandomInt(config.min, operand1);
+      operand2 = getRandomInt(config.operatorMin, operand1);
     } else {
-      operand2 = getRandomInt(config.min, max);
+      operand2 = getRandomInt(config.operatorMin, config.operatorMax);
     }
 
     let correctAnswer: number;
