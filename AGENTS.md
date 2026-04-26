@@ -46,3 +46,7 @@ pnpm db:push      # drizzle-kit push
 - **API**: Route handlers in `src/app/api/`
 - **Lib**: Utilities in `src/lib/` (auth, env, math)
 - **Types**: Custom TS in `src/types/` and `src/lib/math.ts`
+
+## UI Components
+- **Prefira sempre shadcn/ui**: Use componentes de `@/components/ui/` primeiro
+- **Se não existir no shadcn**: Me pergunte antes de usar outra lib

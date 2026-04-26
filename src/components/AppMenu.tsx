@@ -1,6 +1,5 @@
 "use client";
 
-import { ChevronDownIcon, LockIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -74,34 +73,15 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
   const triggerClass = cn(
     "group w-full flex items-center justify-between transition-colors",
     variant === "mobile"
-      ? "px-4 py-3 data-[state=open]:bg-gray-50"
-      : "px-3 py-2.5 text-sm font-medium data-[state=open]:bg-gray-100",
+      ? "px-4 py-4 data-[state=open]:bg-gray-50"
+      : "px-3 py-4 text-sm font-medium data-[state=open]:bg-gray-100",
     variant === "mobile" ? "text-gray-800" : "text-gray-700",
-  );
-
-  const labelClass = cn(
-    "flex items-center gap-3",
-    variant === "sidebar" && "font-medium text-sm",
   );
 
   const contentClass = cn(
     "flex flex-col overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
     variant === "sidebar" && "py-1",
   );
-
-  const itemClass = (isActive: boolean, isLast: boolean) =>
-    cn(
-      "flex items-center gap-3 transition-colors",
-      variant === "mobile"
-        ? "px-4 py-3 hover:bg-gray-50"
-        : "px-3 py-2 text-sm hover:bg-gray-100",
-      isActive
-        ? variant === "mobile"
-          ? "bg-violet-50 text-violet-600"
-          : "bg-violet-500 text-white"
-        : "text-gray-800",
-      !isLast && "border-b border-gray-100",
-    );
 
   const separatorClass =
     variant === "sidebar" ? "h-px bg-gray-200 mx-3" : "h-px bg-gray-100";
@@ -134,22 +114,29 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
           </button>
         </div>
 
+        <Link
+          href="/"
+          className={cn(
+            "flex items-center gap-3 w-full px-4 py-4",
+            pathname === "/"
+              ? "bg-violet-100 text-violet-700"
+              : "text-gray-700 hover:bg-gray-100"
+          )}
+        >
+          <span className="w-6 text-center">🏠</span>
+          <span className="font-medium">Início</span>
+        </Link>
+
         <Accordion type="multiple" className="flex-1 overflow-y-auto">
           {modules.map((module, moduleIndex) => (
             <AccordionItem key={module.id} value={module.id}>
               <AccordionTrigger
                 disabled={module.locked}
+                hideIcon={module.locked}
                 className={cn(triggerClass, module.locked && "opacity-50")}
               >
-                <div className={labelClass}>
-                  <span className="text-xl">{module.icon}</span>
-                  <span className="font-medium">{module.name}</span>
-                </div>
-                {module.locked ? (
-                  <LockIcon className="size-4 text-gray-400" />
-                ) : (
-                  <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
-                )}
+                <span className="text-base w-6 text-center">{module.icon}</span>
+                <span className="flex-1 text-left">{module.name}</span>
               </AccordionTrigger>
               <AccordionContent className={contentClass}>
                 <div className="flex flex-col">
@@ -158,18 +145,14 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
                       key={op.name}
                       href={op.href}
                       onClick={onClose}
-                      className={itemClass(
-                        pathname === op.href,
-                        opIndex === module.operations.length - 1,
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50",
+                        pathname === op.href && "bg-violet-50 text-violet-600",
+                        opIndex !== module.operations.length - 1 && "border-b border-gray-100",
                       )}
                     >
-                      <span className="w-8 text-center font-bold">
-                        {op.symbol}
-                      </span>
-                      <span className="font-medium">{op.name}</span>
-                      {op.locked && (
-                        <LockIcon className="size-4 text-gray-400 ml-auto" />
-                      )}
+                      <span className="w-6 text-center font-bold">{op.symbol}</span>
+                      <span className="flex-1 text-left">{op.name}</span>
                     </Link>
                   ))}
                 </div>
@@ -190,11 +173,25 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
         <h1 className={titleClass}>Math Generator</h1>
       </div>
 
+      <Link
+        href="/"
+        className={cn(
+          "flex items-center gap-3 w-full px-3 py-4",
+          pathname === "/"
+            ? "bg-violet-100 text-violet-700"
+            : "text-gray-700 hover:bg-gray-100"
+        )}
+      >
+        <span className="w-6 text-center">🏠</span>
+        <span className="text-sm font-medium">Início</span>
+      </Link>
+
       <Accordion type="multiple" className="flex-1 overflow-y-auto">
         {modules.map((module, moduleIndex) => (
           <AccordionItem key={module.id} value={module.id}>
             <AccordionTrigger
               disabled={module.locked}
+              hideIcon={module.locked}
               className={cn(
                 triggerClass,
                 "font-medium text-sm",
@@ -203,15 +200,8 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
                   : "hover:bg-gray-100",
               )}
             >
-              <div className={labelClass}>
-                <span>{module.icon}</span>
-                <span>{module.name}</span>
-              </div>
-              {module.locked ? (
-                <LockIcon className="size-3.5 text-gray-400" />
-              ) : (
-                <ChevronDownIcon className="size-3.5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
-              )}
+              <span className="w-6 text-center">{module.icon}</span>
+              <span className="flex-1 text-left">{module.name}</span>
             </AccordionTrigger>
             <AccordionContent className={contentClass}>
               <div className="flex flex-col">
@@ -219,18 +209,14 @@ export function AppMenu({ variant, onClose }: AppMenuProps) {
                   <Link
                     key={op.name}
                     href={op.href}
-                    className={itemClass(
-                      pathname === op.href,
-                      opIndex === module.operations.length - 1,
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2 text-sm transition-colors hover:bg-gray-100",
+                      pathname === op.href && "bg-violet-500 text-white",
+                      opIndex !== module.operations.length - 1 && "border-b border-gray-100",
                     )}
                   >
-                    <span className="w-5 text-center font-bold">
-                      {op.symbol}
-                    </span>
-                    <span>{op.name}</span>
-                    {op.locked && (
-                      <LockIcon className="size-3.5 text-gray-400 ml-auto" />
-                    )}
+                    <span className="w-6 text-center font-bold">{op.symbol}</span>
+                    <span className="flex-1 text-left">{op.name}</span>
                   </Link>
                 ))}
               </div>

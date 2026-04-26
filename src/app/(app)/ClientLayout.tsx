@@ -1,11 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+
 import { AppMenu } from "@/components/AppMenu";
 import { LogoutButton } from "@/components/LogoutButton";
 import { MenuButton } from "@/components/MenuButton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useDevice } from "@/contexts/DeviceContext";
 
@@ -19,6 +28,7 @@ export default function ClientLayout({
   userImage: string | null;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { isDesktop } = useDevice();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -31,6 +41,8 @@ export default function ClientLayout({
     };
     return map[pathname] || "Math Generator";
   };
+
+  const isHome = pathname === "/";
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -50,15 +62,33 @@ export default function ClientLayout({
               {getOperationName()}
             </Link>
           </div>
-          <div className="flex items-center gap-2">
-            <Avatar className="w-8 h-8">
-              <AvatarImage src={userImage || undefined} alt={userName} />
-              <AvatarFallback>
-                {userName?.charAt(0).toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
-            {isDesktop && <LogoutButton />}
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-2 outline-none">
+                <Avatar className="w-8 h-8 cursor-pointer">
+                  <AvatarImage src={userImage || undefined} alt={userName} />
+                  <AvatarFallback>
+                    {userName?.charAt(0).toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel>Menu</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/settings" className="w-full cursor-pointer">
+                  Configurações
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => router.push("/api/auth/signout")}
+                className="text-red-600 cursor-pointer"
+              >
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </header>
 
         <div className="flex-1 overflow-y-auto">{children}</div>

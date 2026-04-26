@@ -1,8 +1,8 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import confetti from "canvas-confetti";
 import { KeyButton } from "@/components/ui/key-button";
 import {
   type Difficulty,
@@ -20,11 +20,82 @@ interface OperationPageClientProps {
   operation: Operation;
 }
 
+const COLORS = ["#FF6B6B", "#FFD93D", "#6BCB77", "#4D96FF", "#FF6BFF", "#FF9F43"];
+
+function fireConfetti() {
+  const particleCount = 60;
+  const gravity = 0.9;
+  const ticks = 300;
+  const shapes: ("square" | "circle")[] = ["square", "circle"];
+
+  confetti({
+    particleCount,
+    gravity,
+    ticks,
+    shapes,
+    colors: COLORS,
+    origin: { x: 0.5, y: 1.05 },
+    angle: 90,
+    spread: 70,
+    startVelocity: 55,
+  });
+
+  confetti({
+    particleCount,
+    gravity,
+    ticks,
+    shapes,
+    colors: COLORS,
+    origin: { x: 0, y: 0.8 },
+    angle: 60,
+    spread: 55,
+    startVelocity: 50,
+  });
+
+  confetti({
+    particleCount,
+    gravity,
+    ticks,
+    shapes,
+    colors: COLORS,
+    origin: { x: 1, y: 0.8 },
+    angle: 120,
+    spread: 55,
+    startVelocity: 50,
+  });
+
+  confetti({
+    particleCount,
+    gravity,
+    ticks,
+    shapes,
+    colors: COLORS,
+    origin: { x: 0, y: 1.05 },
+    angle: 75,
+    spread: 50,
+    startVelocity: 52,
+  });
+
+  confetti({
+    particleCount,
+    gravity,
+    ticks,
+    shapes,
+    colors: COLORS,
+    origin: { x: 1, y: 1.05 },
+    angle: 105,
+    spread: 50,
+    startVelocity: 52,
+  });
+}
+
 export function OperationPageClient({ operation }: OperationPageClientProps) {
   const [problem, setProblem] = useState<MathProblem | null>(null);
   const [input, setInput] = useState("");
   const [streak, setStreak] = useState(0);
+  const [streakAnimation, setStreakAnimation] = useState(false);
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
+  const [userAnswer, setUserAnswer] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const trpc = useTRPC();
 
@@ -41,6 +112,7 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
     setProblem(newProblem);
     setInput("");
     setFeedback(null);
+    setUserAnswer(null);
     setTimeout(() => inputRef.current?.focus(), 100);
   }, [operation, difficulty]);
 
@@ -51,30 +123,38 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
   const handleSubmit = async () => {
     if (!problem || !input || submitAnswer.isPending) return;
 
-    const userAnswer = parseInt(input, 10);
-    if (Number.isNaN(userAnswer)) return;
+    const userAnswerNum = parseInt(input, 10);
+    if (Number.isNaN(userAnswerNum)) return;
 
-    const isCorrect = userAnswer === problem.correctAnswer;
+    const isCorrect = userAnswerNum === problem.correctAnswer;
+
+    setUserAnswer(input);
 
     try {
       await submitAnswer.mutateAsync({
         operation,
         operand1: problem.operand1,
         operand2: problem.operand2,
-        userAnswer,
+        userAnswer: userAnswerNum,
         correctAnswer: problem.correctAnswer,
         difficulty,
       });
 
       if (isCorrect) {
         setFeedback("correct");
-        setStreak((s) => s + 1);
+        setStreak((s) => {
+          const newStreak = s + 1;
+          setStreakAnimation(true);
+          setTimeout(() => setStreakAnimation(false), 500);
+          return newStreak;
+        });
+        fireConfetti();
       } else {
         setFeedback("wrong");
         setStreak(0);
       }
 
-      setTimeout(generateNewProblem, 1500);
+      setTimeout(generateNewProblem, 2000);
     } catch (error) {
       console.error("Error submitting answer:", error);
     }
@@ -103,33 +183,18 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
   return (
     <main className="min-h-full bg-gray-50 flex flex-col">
       <header className="bg-white px-5 pt-6 pb-4">
-        <div className="flex items-center gap-3 mb-4">
-          <Link
-            href="/"
-            className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center"
-          >
-            <svg
-              className="w-5 h-5 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </Link>
-          <h1 className="text-xl font-bold text-gray-800">
-            {operationSymbols[operation]}
-          </h1>
-        </div>
-
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-amber-500 font-semibold">
-            🔥 Streak: {streak}
+          <span
+            className={`font-semibold transition-transform duration-300 ${
+              streakAnimation ? "scale-125" : ""
+            }`}
+          >
+            <span
+              className={streakAnimation ? "animate-bounce inline-block" : ""}
+            >
+              🔥
+            </span>
+            {" "}Streak: {streak}
           </span>
         </div>
 
@@ -161,8 +226,6 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
                     : "bg-white"
               }`}
             >
-              {feedback === "correct" && <div className="text-6xl mb-4">✓</div>}
-              {feedback === "wrong" && <div className="text-6xl mb-4">✗</div>}
               <p className="text-5xl font-bold text-gray-800">
                 {problem
                   ? `${problem.operand1} ${operationSymbols[operation]} ${problem.operand2}`
@@ -171,24 +234,18 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
               <p className="text-4xl font-bold text-gray-400 mt-2">= ?</p>
             </div>
 
-            <div className="bg-gray-100 rounded-2xl p-4 mb-4">
-              <input
-                ref={inputRef}
-                type="text"
-                inputMode="numeric"
-                value={input}
-                onChange={(e) => {
-                  if (/^\d*$/.test(e.target.value)) {
-                    setInput(e.target.value);
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSubmit();
-                }}
-                placeholder="Sua resposta"
-                className="w-full bg-transparent text-center text-3xl font-bold text-gray-800 outline-none placeholder:text-gray-400"
-                disabled={!!feedback}
-              />
+            <div
+              className={`bg-gray-100 rounded-2xl p-4 mb-4 ${
+                feedback === "correct"
+                  ? "bg-emerald-100"
+                  : feedback === "wrong"
+                    ? "bg-red-100"
+                    : ""
+              }`}
+            >
+              <p className="w-full bg-transparent text-center text-3xl font-bold text-gray-800">
+                {userAnswer || input || "?"}
+              </p>
             </div>
           </div>
         </div>
