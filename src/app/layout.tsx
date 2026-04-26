@@ -19,7 +19,7 @@ const _geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Math Generator",
+  title: "Gerador de contas matemáticas",
   description: "Gerador de contas matemáticas",
 };
 
