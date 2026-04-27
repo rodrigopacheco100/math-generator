@@ -1,6 +1,13 @@
 import { relations } from "drizzle-orm";
-import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { DifficultyEnum, OperationEnum } from "./enums";
+import {
+  boolean,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
+import { DifficultyEnum } from "./enums";
 import { users } from "./users";
 
 export const answers = pgTable("answers", {
@@ -8,12 +15,11 @@ export const answers = pgTable("answers", {
   userId: uuid("user_id")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
-  operation: text("operation", { enum: OperationEnum }).notNull(),
-  operand1: integer("operand1").notNull(),
-  operand2: integer("operand2").notNull(),
-  userAnswer: integer("user_answer").notNull(),
-  correctAnswer: integer("correct_answer").notNull(),
-  isCorrect: integer("is_correct").notNull(),
+  operation: text("operation").notNull(),
+  problem: jsonb("problem").notNull(),
+  userAnswer: jsonb("user_answer").notNull(),
+  correctAnswer: jsonb("correct_answer").notNull(),
+  isCorrect: boolean("is_correct").notNull(),
   difficulty: text("difficulty", { enum: DifficultyEnum }).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

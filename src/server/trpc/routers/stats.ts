@@ -73,7 +73,7 @@ async function getStatsForPeriod(
   const result = await db.select().from(answers).where(where);
 
   const totalAnswers = result.length;
-  const correctAnswers = result.filter((a) => a.isCorrect === 1).length;
+  const correctAnswers = result.filter((a) => a.isCorrect === true).length;
   const accuracy =
     totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0;
 

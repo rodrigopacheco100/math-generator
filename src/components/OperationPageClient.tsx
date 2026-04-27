@@ -6,15 +6,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTRPC } from "@/client/client";
 import { KeyButton } from "@/components/ui/key-button";
 import { useUserDifficulty } from "@/hooks/useUserDifficulty";
-import {
-  type Difficulty,
-  generateProblem,
-  IntegerOperations,
-  type MathProblem,
-  operationSymbols,
-} from "@/lib/math";
+import { getStrategy } from "@/lib/math/strategies";
+import type { Difficulty, MathProblem } from "@/lib/math/types";
+import { translatedDifficulty } from "@/lib/math/types";
 
-type Operation = IntegerOperations.Operation;
+type Operation = "addition" | "subtraction" | "multiplication" | "division";
+
+interface ProblemData extends MathProblem {
+  correctAnswer: number | string;
+}
 
 interface OperationPageClientProps {
   operation: Operation;
@@ -96,8 +96,20 @@ function fireConfetti() {
   });
 }
 
+const symbols: Record<string, string> = {
+  addition: "+",
+  subtraction: "−",
+  multiplication: "×",
+  division: "÷",
+};
+
+function formatProblemDisplay(problem: MathProblem, operation: string): string {
+  const symbol = symbols[operation] || operation;
+  return `${problem.operands[0]} ${symbol} ${problem.operands[1]} = ?`;
+}
+
 export function OperationPageClient({ operation }: OperationPageClientProps) {
-  const [problem, setProblem] = useState<MathProblem | null>(null);
+  const [problem, setProblem] = useState<ProblemData | null>(null);
   const [input, setInput] = useState("");
   const [streak, setStreak] = useState(0);
   const [streakAnimation, setStreakAnimation] = useState(false);
@@ -106,29 +118,29 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const trpc = useTRPC();
 
-  const {
-    difficulty,
-    updateDifficulty,
-    isLoading: settingsLoading,
-  } = useUserDifficulty();
+  const { difficulty, updateDifficulty } = useUserDifficulty();
 
   const submitAnswer = useMutation(trpc.answers.submitAnswer.mutationOptions());
 
+  const strategy = getStrategy(operation);
+
   const generateNewProblem = useCallback(() => {
-    const newProblem = generateProblem(operation, difficulty);
+    if (!strategy) return;
+
+    const newProblem = strategy.generateProblem(difficulty);
     setProblem(newProblem);
     setInput("");
     setFeedback(null);
     setUserAnswer(null);
     setTimeout(() => inputRef.current?.focus(), 100);
-  }, [operation, difficulty]);
+  }, [strategy, difficulty]);
 
   useEffect(() => {
     generateNewProblem();
   }, [generateNewProblem]);
 
   const handleSubmit = async () => {
-    if (!problem || !input || submitAnswer.isPending) return;
+    if (!problem || !input || submitAnswer.isPending || !strategy) return;
 
     const userAnswerNum = parseInt(input, 10);
     if (Number.isNaN(userAnswerNum)) return;
@@ -140,8 +152,7 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
     try {
       await submitAnswer.mutateAsync({
         operation,
-        operand1: problem.operand1,
-        operand2: problem.operand2,
+        problem: { type: problem.type, operands: problem.operands },
         userAnswer: userAnswerNum,
         correctAnswer: problem.correctAnswer,
         difficulty,
@@ -214,7 +225,7 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
           >
             {difficulties.map((d) => (
               <option key={d} value={d}>
-                {IntegerOperations.getDifficultyLabel(operation, d)}
+                {translatedDifficulty[d]}
               </option>
             ))}
           </select>
@@ -234,9 +245,7 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
               }`}
             >
               <p className="text-5xl font-bold text-gray-800">
-                {problem
-                  ? `${problem.operand1} ${operationSymbols[operation]} ${problem.operand2}`
-                  : "..."}
+                {problem ? formatProblemDisplay(problem, operation) : "..."}
               </p>
               <p className="text-4xl font-bold text-gray-400 mt-2">= ?</p>
             </div>

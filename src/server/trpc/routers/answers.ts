@@ -4,34 +4,59 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../db/db";
 import { answers, users } from "../../db/schemas";
-import type { DifficultyType, OperationType } from "../../db/schemas/enums";
+import type { DifficultyType } from "../../db/schemas/enums";
 import { createTRPCRouter, protectedProcedure } from "../init";
 
+const problemSchema = z.object({
+  type: z.string(),
+  operands: z.array(z.number()),
+});
+
+const userAnswerSchema = z.union([
+  z.number(),
+  z.string(),
+  z.object({ value: z.union([z.number(), z.string()]) }),
+]);
+
+const correctAnswerSchema = z.union([
+  z.number(),
+  z.string(),
+  z.object({ value: z.union([z.number(), z.string()]) }),
+]);
+
 const inputSchema = z.object({
-  operation: z.enum(["addition", "subtraction", "multiplication", "division"]),
-  operand1: z.number(),
-  operand2: z.number(),
-  userAnswer: z.number(),
-  correctAnswer: z.number(),
+  operation: z.string(),
+  problem: problemSchema,
+  userAnswer: userAnswerSchema,
+  correctAnswer: correctAnswerSchema,
   difficulty: z.enum(["easy", "medium", "hard"]),
 });
 
-const _outputSchema = z.object({
-  isCorrect: z.boolean(),
-});
+function extractValue(val: unknown): string | number {
+  if (typeof val === "number" || typeof val === "string") {
+    return val;
+  }
+  if (typeof val === "object" && val !== null && "value" in val) {
+    return (val as { value: string | number }).value;
+  }
+  return 0;
+}
+
+function normalizeValue(val: unknown): unknown {
+  if (typeof val === "number" || typeof val === "string") {
+    return val;
+  }
+  if (typeof val === "object" && val !== null && "value" in val) {
+    return val;
+  }
+  return { value: val };
+}
 
 export const submitAnswer = protectedProcedure
   .input(inputSchema)
   .mutation(async ({ input, ctx }) => {
     const db = await getDb();
-    const {
-      operation,
-      operand1,
-      operand2,
-      userAnswer,
-      correctAnswer,
-      difficulty,
-    } = input;
+    const { operation, problem, userAnswer, correctAnswer, difficulty } = input;
 
     const userResult = await db
       .select()
@@ -47,16 +72,18 @@ export const submitAnswer = protectedProcedure
     }
 
     const userId = userResult[0].id;
-    const isCorrect = userAnswer === correctAnswer;
+
+    const userVal = extractValue(userAnswer);
+    const correctVal = extractValue(correctAnswer);
+    const isCorrect = userVal === correctVal;
 
     await db.insert(answers).values({
       userId,
-      operation: operation as OperationType,
-      operand1,
-      operand2,
-      userAnswer,
-      correctAnswer,
-      isCorrect: isCorrect ? 1 : 0,
+      operation,
+      problem,
+      userAnswer: normalizeValue(userAnswer),
+      correctAnswer: normalizeValue(correctAnswer),
+      isCorrect,
       difficulty: difficulty as DifficultyType,
     });
 

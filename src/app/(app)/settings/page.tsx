@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { useTRPC } from "@/client/client";
 import { SelectCard } from "@/components/ui/select-card";
-import { IntegerOperations } from "@/lib/math";
+import { translatedDifficulty } from "@/lib/math/types";
 import type { DifficultyType } from "@/server/db/schemas/enums";
 
 const difficulties: DifficultyType[] = ["easy", "medium", "hard"];
@@ -103,7 +103,7 @@ export default function SettingsPage() {
                     }`}
                   />
                   <span className="text-gray-800 font-medium">
-                    {IntegerOperations.getDifficultyLabel("addition", d)}
+                    {translatedDifficulty[d]}
                   </span>
                 </SelectCard>
               ))}

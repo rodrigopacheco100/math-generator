@@ -15,6 +15,13 @@
       "when": 1777158830268,
       "tag": "0001_small_makkari",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777234742040,
+      "tag": "0002_breezy_frog_thor",
+      "breakpoints": true
     }
   ]
 }
