@@ -1,5 +1,6 @@
 import type { MathStrategy } from "./base";
 import { BinaryStrategy } from "./binary";
+import { DivisibilityStrategy } from "./divisibility";
 import { PowerStrategy, SquareRootStrategy } from "./power";
 
 const strategies = new Map<string, MathStrategy>();
@@ -10,6 +11,7 @@ strategies.set("multiplication", new BinaryStrategy("multiplication"));
 strategies.set("division", new BinaryStrategy("division"));
 strategies.set("power", new PowerStrategy());
 strategies.set("square_root", new SquareRootStrategy());
+strategies.set("divisibility", new DivisibilityStrategy());
 
 export function getStrategy(operation: string): MathStrategy | undefined {
   return strategies.get(operation);
@@ -35,4 +37,5 @@ export type Operation =
   | "multiplication"
   | "division"
   | "power"
-  | "square_root";
+  | "square_root"
+  | "divisibility";

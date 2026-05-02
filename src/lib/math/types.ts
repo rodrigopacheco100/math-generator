@@ -11,7 +11,7 @@ export interface MathProblem {
 }
 
 export interface UserAnswer {
-  value: string | number;
+  value: string | number | number[];
 }
 
 export interface StoredProblem extends MathProblem {

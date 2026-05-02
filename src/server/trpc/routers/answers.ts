@@ -11,45 +11,47 @@ const problemSchema = z.object({
   operands: z.array(z.number()),
 });
 
-const userAnswerSchema = z.union([
-  z.number(),
-  z.string(),
-  z.object({ value: z.union([z.number(), z.string()]) }),
-]);
+const arithmeticAnswerSchema = z.object({
+  value: z.union([z.number(), z.string()]),
+});
 
-const correctAnswerSchema = z.union([
-  z.number(),
-  z.string(),
-  z.object({ value: z.union([z.number(), z.string()]) }),
-]);
+const divisibilityAnswerSchema = z.object({
+  value: z.array(z.number()),
+});
 
-const inputSchema = z.object({
-  operation: z.string(),
+const powerAnswerSchema = z.object({
+  value: z.union([z.number(), z.string()]),
+});
+
+const arithmeticInputSchema = z.object({
+  operation: z.enum(["addition", "subtraction", "multiplication", "division"]),
   problem: problemSchema,
-  userAnswer: userAnswerSchema,
-  correctAnswer: correctAnswerSchema,
+  userAnswer: arithmeticAnswerSchema,
+  correctAnswer: arithmeticAnswerSchema,
   difficulty: z.enum(["easy", "medium", "hard"]),
 });
 
-function extractValue(val: unknown): string | number {
-  if (typeof val === "number" || typeof val === "string") {
-    return val;
-  }
-  if (typeof val === "object" && val !== null && "value" in val) {
-    return (val as { value: string | number }).value;
-  }
-  return 0;
-}
+const divisibilityInputSchema = z.object({
+  operation: z.literal("divisibility"),
+  problem: problemSchema,
+  userAnswer: divisibilityAnswerSchema,
+  correctAnswer: divisibilityAnswerSchema,
+  difficulty: z.enum(["easy", "medium", "hard"]),
+});
 
-function normalizeValue(val: unknown): unknown {
-  if (typeof val === "number" || typeof val === "string") {
-    return val;
-  }
-  if (typeof val === "object" && val !== null && "value" in val) {
-    return val;
-  }
-  return { value: val };
-}
+const powerInputSchema = z.object({
+  operation: z.enum(["power", "square_root"]),
+  problem: problemSchema,
+  userAnswer: powerAnswerSchema,
+  correctAnswer: powerAnswerSchema,
+  difficulty: z.enum(["easy", "medium", "hard"]),
+});
+
+const inputSchema = z.discriminatedUnion("operation", [
+  arithmeticInputSchema,
+  divisibilityInputSchema,
+  powerInputSchema,
+]);
 
 export const submitAnswer = protectedProcedure
   .input(inputSchema)
@@ -72,16 +74,15 @@ export const submitAnswer = protectedProcedure
 
     const userId = userResult[0].id;
 
-    const userVal = extractValue(userAnswer);
-    const correctVal = extractValue(correctAnswer);
-    const isCorrect = userVal === correctVal;
+    const isCorrect =
+      JSON.stringify(userAnswer.value) === JSON.stringify(correctAnswer.value);
 
     await db.insert(answers).values({
       userId,
       operation,
       problem,
-      userAnswer: normalizeValue(userAnswer),
-      correctAnswer: normalizeValue(correctAnswer),
+      userAnswer,
+      correctAnswer,
       isCorrect,
       difficulty: difficulty as DifficultyType,
     });

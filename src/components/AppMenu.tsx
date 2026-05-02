@@ -21,6 +21,7 @@ const modules: Module[] = [
       { name: "Subtração", href: "/math/subtracao", symbol: "−" },
       { name: "Multiplicação", href: "/math/multiplicacao", symbol: "×" },
       { name: "Divisão", href: "/math/divisao", symbol: "÷" },
+      { name: "Divisibilidade", href: "/math/divisibilidade", symbol: "÷" },
     ],
   },
   {

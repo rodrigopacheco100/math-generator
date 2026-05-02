@@ -39,6 +39,7 @@ export default function ClientLayout({
       "/math/divisao": "Divisão",
       "/math/potencia": "Potência",
       "/math/raiz-quadrada": "Raiz Quadrada",
+      "/math/divisibilidade": "Divisibilidade",
     };
     return map[pathname] || "Math Generator";
   };

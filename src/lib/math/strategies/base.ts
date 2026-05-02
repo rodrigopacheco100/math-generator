@@ -15,11 +15,11 @@ export interface MathStrategy {
   getConfig(difficulty: Difficulty): OperationConfig;
   generateProblem(
     difficulty: Difficulty,
-  ): MathProblem & { correctAnswer: number | string };
+  ): MathProblem & { correctAnswer: number | string | number[] };
   formatProblem(problem: MathProblem): string;
   checkAnswer(
     problem: MathProblem,
     userAnswer: UserAnswer,
-    correctAnswer: number | string,
+    correctAnswer: number | string | number[],
   ): boolean;
 }

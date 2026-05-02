@@ -4,13 +4,13 @@ import { useMutation } from "@tanstack/react-query";
 import confetti from "canvas-confetti";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTRPC } from "@/client/client";
+import { AnswerInput } from "@/components/math/AnswerInput";
+import { NumberKeyboard } from "@/components/math/NumberKeyboard";
+import { ProblemDisplay } from "@/components/math/ProblemDisplay";
 import { useUserDifficulty } from "@/hooks/useUserDifficulty";
 import { getStrategy } from "@/lib/math/strategies";
 import type { Difficulty, MathProblem } from "@/lib/math/types";
 import { translatedDifficulty } from "@/lib/math/types";
-import { AnswerInput } from "@/components/math/AnswerInput";
-import { NumberKeyboard } from "@/components/math/NumberKeyboard";
-import { ProblemDisplay } from "@/components/math/ProblemDisplay";
 
 type Operation =
   | "addition"
@@ -18,10 +18,11 @@ type Operation =
   | "multiplication"
   | "division"
   | "power"
-  | "square_root";
+  | "square_root"
+  | "divisibility";
 
 interface ProblemData extends MathProblem {
-  correctAnswer: number | string;
+  correctAnswer: number | string | number[];
 }
 
 interface OperationPageClientProps {
@@ -147,10 +148,10 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
 
     try {
       await submitAnswer.mutateAsync({
-        operation,
+        operation: operation as any,
         problem: { operands: problem.operands },
-        userAnswer: userAnswerNum,
-        correctAnswer: problem.correctAnswer,
+        userAnswer: { value: userAnswerNum },
+        correctAnswer: { value: problem.correctAnswer as string | number },
         difficulty,
       });
 

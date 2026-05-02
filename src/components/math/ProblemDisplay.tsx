@@ -6,7 +6,8 @@ type Operation =
   | "multiplication"
   | "division"
   | "power"
-  | "square_root";
+  | "square_root"
+  | "divisibility";
 
 const symbols: Record<string, string> = {
   addition: "+",
@@ -15,6 +16,7 @@ const symbols: Record<string, string> = {
   division: "÷",
   power: "^",
   square_root: "√",
+  divisibility: "÷",
 };
 
 interface ProblemDisplayProps {
@@ -43,6 +45,9 @@ export function ProblemDisplay({
     }
     if (operation === "square_root") {
       return `√${problem.operands[0]} = ?`;
+    }
+    if (operation === "divisibility") {
+      return `${problem.operands[0]} ÷ ${problem.operands[1]} = ?`;
     }
     const symbol = symbols[operation] || operation;
     return `${problem.operands[0]} ${symbol} ${problem.operands[1]} = ?`;
