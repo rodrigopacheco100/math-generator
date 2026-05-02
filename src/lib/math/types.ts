@@ -7,7 +7,6 @@ export const translatedDifficulty: Record<Difficulty, string> = {
 };
 
 export interface MathProblem {
-  type: string;
   operands: number[];
 }
 

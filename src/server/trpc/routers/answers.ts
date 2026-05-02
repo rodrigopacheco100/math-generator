@@ -8,7 +8,6 @@ import type { DifficultyType } from "../../db/schemas/enums";
 import { createTRPCRouter, protectedProcedure } from "../init";
 
 const problemSchema = z.object({
-  type: z.string(),
   operands: z.array(z.number()),
 });
 

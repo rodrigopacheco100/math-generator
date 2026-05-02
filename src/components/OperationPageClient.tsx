@@ -148,7 +148,7 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
     try {
       await submitAnswer.mutateAsync({
         operation,
-        problem: { type: problem.type, operands: problem.operands },
+        problem: { operands: problem.operands },
         userAnswer: userAnswerNum,
         correctAnswer: problem.correctAnswer,
         difficulty,

@@ -37,7 +37,6 @@ export class BinaryStrategy implements MathStrategy {
       const dividend = divisor * quotient;
 
       return {
-        type: this.operation,
         operands: [dividend, divisor],
         correctAnswer: quotient,
       };
@@ -68,7 +67,6 @@ export class BinaryStrategy implements MathStrategy {
     }
 
     return {
-      type: this.operation,
       operands: [operand1, operand2],
       correctAnswer,
     };

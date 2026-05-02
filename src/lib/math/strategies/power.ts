@@ -47,7 +47,6 @@ export class PowerStrategy implements MathStrategy {
     const correctAnswer = Math.pow(base, exponent);
 
     return {
-      type: "power",
       operands: [base, exponent],
       correctAnswer,
     };
@@ -85,7 +84,6 @@ export class SquareRootStrategy implements MathStrategy {
     const correctAnswer = Math.sqrt(randomSquare);
 
     return {
-      type: "square_root",
       operands: [randomSquare],
       correctAnswer,
     };
