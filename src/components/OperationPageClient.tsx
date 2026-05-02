@@ -4,13 +4,21 @@ import { useMutation } from "@tanstack/react-query";
 import confetti from "canvas-confetti";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTRPC } from "@/client/client";
-import { KeyButton } from "@/components/ui/key-button";
 import { useUserDifficulty } from "@/hooks/useUserDifficulty";
 import { getStrategy } from "@/lib/math/strategies";
 import type { Difficulty, MathProblem } from "@/lib/math/types";
 import { translatedDifficulty } from "@/lib/math/types";
+import { AnswerInput } from "@/components/math/AnswerInput";
+import { NumberKeyboard } from "@/components/math/NumberKeyboard";
+import { ProblemDisplay } from "@/components/math/ProblemDisplay";
 
-type Operation = "addition" | "subtraction" | "multiplication" | "division";
+type Operation =
+  | "addition"
+  | "subtraction"
+  | "multiplication"
+  | "division"
+  | "power"
+  | "square_root";
 
 interface ProblemData extends MathProblem {
   correctAnswer: number | string;
@@ -96,18 +104,6 @@ function fireConfetti() {
   });
 }
 
-const symbols: Record<string, string> = {
-  addition: "+",
-  subtraction: "−",
-  multiplication: "×",
-  division: "÷",
-};
-
-function formatProblemDisplay(problem: MathProblem, operation: string): string {
-  const symbol = symbols[operation] || operation;
-  return `${problem.operands[0]} ${symbol} ${problem.operands[1]} = ?`;
-}
-
 export function OperationPageClient({ operation }: OperationPageClientProps) {
   const [problem, setProblem] = useState<ProblemData | null>(null);
   const [input, setInput] = useState("");
@@ -189,13 +185,6 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
     }
   };
 
-  const keys = [
-    ["1", "2", "3"],
-    ["4", "5", "6"],
-    ["7", "8", "9"],
-    ["DEL", "0", "OK"],
-  ];
-
   const difficulties: Difficulty[] = ["easy", "medium", "hard"];
 
   return (
@@ -235,57 +224,21 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
       <div className="flex-1 flex flex-col">
         <div className="flex-1 flex items-center justify-center px-5">
           <div className="w-full max-w-sm">
-            <div
-              className={`rounded-2xl p-8 text-center mb-5 ${
-                feedback === "correct"
-                  ? "bg-emerald-100"
-                  : feedback === "wrong"
-                    ? "bg-red-100"
-                    : "bg-white"
-              }`}
-            >
-              <p className="text-5xl font-bold text-gray-800">
-                {problem ? formatProblemDisplay(problem, operation) : "..."}
-              </p>
-              <p className="text-4xl font-bold text-gray-400 mt-2">= ?</p>
-            </div>
-
-            <div
-              className={`bg-gray-100 rounded-2xl p-4 mb-4 ${
-                feedback === "correct"
-                  ? "bg-emerald-100"
-                  : feedback === "wrong"
-                    ? "bg-red-100"
-                    : ""
-              }`}
-            >
-              <p className="w-full bg-transparent text-center text-3xl font-bold text-gray-800">
-                {userAnswer || input || "?"}
-              </p>
-            </div>
+            <ProblemDisplay
+              problem={problem}
+              operation={operation}
+              feedback={feedback}
+            />
+            <AnswerInput
+              input={input}
+              userAnswer={userAnswer}
+              feedback={feedback}
+            />
           </div>
         </div>
 
         <div className="px-5 pb-8">
-          <div className="flex flex-col gap-2">
-            {keys.map((row, i) => (
-              <div key={`key_row_${i}`} className="flex gap-2">
-                {row.map((key) => (
-                  <KeyButton
-                    key={`key_${key}`}
-                    keyType={
-                      key === "DEL" ? "del" : key === "OK" ? "ok" : "number"
-                    }
-                    onClick={() => handleKeyPress(key)}
-                    className="flex-1 h-14 rounded-xl font-semibold text-xl"
-                    disabled={!!feedback}
-                  >
-                    {key}
-                  </KeyButton>
-                ))}
-              </div>
-            ))}
-          </div>
+          <NumberKeyboard onKeyPress={handleKeyPress} disabled={!!feedback} />
         </div>
       </div>
     </main>

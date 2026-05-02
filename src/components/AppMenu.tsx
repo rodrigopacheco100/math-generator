@@ -24,6 +24,15 @@ const modules: Module[] = [
     ],
   },
   {
+    id: "potencia",
+    name: "Potência e Raiz Quadrada",
+    icon: "🚀",
+    operations: [
+      { name: "Potência", href: "/math/potencia", symbol: "^" },
+      { name: "Raiz Quadrada", href: "/math/raiz-quadrada", symbol: "√" },
+    ],
+  },
+  {
     id: "geometria",
     name: "Geometria",
     icon: "🔒",

@@ -37,6 +37,8 @@ export default function ClientLayout({
       "/math/subtracao": "Subtração",
       "/math/multiplicacao": "Multiplicação",
       "/math/divisao": "Divisão",
+      "/math/potencia": "Potência",
+      "/math/raiz-quadrada": "Raiz Quadrada",
     };
     return map[pathname] || "Math Generator";
   };
