@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTRPC } from "@/client/client";
 import { DivisibilitySelector } from "@/components/math/DivisibilitySelector";
+import { Button } from "@/components/ui/button";
 import { useUserDifficulty } from "@/hooks/useUserDifficulty";
 import { getStrategy } from "@/lib/math/strategies";
 import type { Difficulty, MathProblem } from "@/lib/math/types";
@@ -17,6 +18,7 @@ export function DivisibilityPageClient() {
   const [problem, setProblem] = useState<ProblemData | null>(null);
   const [selectedDivisors, setSelectedDivisors] = useState<number[]>([]);
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
+  const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const trpc = useTRPC();
 
@@ -26,26 +28,24 @@ export function DivisibilityPageClient() {
   const strategy = getStrategy("divisibility");
 
   const generateNewProblem = useCallback(() => {
-    if (!strategy) return;
-
     const newProblem = strategy.generateProblem(difficulty);
     setProblem(newProblem);
     setSelectedDivisors([]);
     setFeedback(null);
+    setShowCorrectAnswer(false);
     setTimeout(() => inputRef.current?.focus(), 100);
   }, [strategy, difficulty]);
+
+  const handleNextProblem = () => {
+    generateNewProblem();
+  };
 
   useEffect(() => {
     generateNewProblem();
   }, [generateNewProblem]);
 
   const handleSubmit = async () => {
-    if (
-      !problem ||
-      selectedDivisors.length === 0 ||
-      submitAnswer.isPending ||
-      !strategy
-    )
+    if (!problem || selectedDivisors.length === 0 || submitAnswer.isPending)
       return;
 
     try {
@@ -65,11 +65,11 @@ export function DivisibilityPageClient() {
 
       if (isCorrect) {
         setFeedback("correct");
+        setTimeout(generateNewProblem, 2000);
       } else {
         setFeedback("wrong");
+        setShowCorrectAnswer(true);
       }
-
-      setTimeout(generateNewProblem, 2000);
     } catch (error) {
       console.error("Error submitting answer:", error);
     }
@@ -125,19 +125,43 @@ export function DivisibilityPageClient() {
               number={problem?.operands[0] || 0}
               selectedDivisors={selectedDivisors}
               onDivisorToggle={handleDivisorToggle}
+              disabled={showCorrectAnswer}
             />
+
+            {showCorrectAnswer && problem && (
+              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-sm font-medium text-blue-800 mb-2">
+                  Resposta correta:
+                </p>
+                <p className="text-lg font-bold text-blue-900">
+                  {Array.isArray(problem.correctAnswer)
+                    ? problem.correctAnswer.sort((a, b) => a - b).join(", ")
+                    : problem.correctAnswer}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="px-5 pb-8">
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={selectedDivisors.length === 0 || !!feedback}
-            className="w-full py-3 px-4 bg-violet-600 text-white rounded-xl font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-          >
-            Verificar
-          </button>
+          {showCorrectAnswer ? (
+            <Button
+              onClick={handleNextProblem}
+              className="w-full py-3"
+              size="lg"
+            >
+              Próximo
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSubmit}
+              disabled={selectedDivisors.length === 0 || !!feedback}
+              className="w-full py-3"
+              size="lg"
+            >
+              Verificar
+            </Button>
+          )}
         </div>
       </div>
     </main>

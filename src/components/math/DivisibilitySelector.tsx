@@ -1,8 +1,26 @@
+import { cva } from "class-variance-authority";
+
 interface DivisibilitySelectorProps {
   number: number;
   selectedDivisors: number[];
   onDivisorToggle: (divisor: number) => void;
+  disabled?: boolean;
 }
+
+const labelVariants = cva(
+  "flex items-center gap-2 p-2 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors",
+  {
+    variants: {
+      disabled: {
+        true: "opacity-50 cursor-not-allowed",
+        false: "",
+      },
+    },
+    defaultVariants: {
+      disabled: false,
+    },
+  },
+);
 
 const allDivisorOptions = [2, 3, 4, 5, 6, 8, 9, 10, 100, 1000];
 
@@ -10,6 +28,7 @@ export function DivisibilitySelector({
   number,
   selectedDivisors,
   onDivisorToggle,
+  disabled,
 }: DivisibilitySelectorProps) {
   // Only show divisors that don't exceed the number
   const divisorOptions = allDivisorOptions.filter(
@@ -23,14 +42,12 @@ export function DivisibilitySelector({
       </p>
       <div className="grid grid-cols-4 gap-2">
         {divisorOptions.map((divisor) => (
-          <label
-            key={divisor}
-            className="flex items-center gap-2 p-2 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-          >
+          <label key={divisor} className={labelVariants({ disabled })}>
             <input
               type="checkbox"
               checked={selectedDivisors.includes(divisor)}
               onChange={() => onDivisorToggle(divisor)}
+              disabled={disabled}
               className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
             />
             <span className="font-medium">{divisor}</span>

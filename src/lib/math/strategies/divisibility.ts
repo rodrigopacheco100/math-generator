@@ -6,9 +6,9 @@ function getRandomInt(min: number, max: number): number {
 }
 
 const divisibilityConfig = {
-  easy: { min: 1, max: 50 },
-  medium: { min: 1, max: 100 },
-  hard: { min: 1, max: 1000 },
+  easy: { min: 1, max: 100 },
+  medium: { min: 100, max: 500 },
+  hard: { min: 500, max: 10000 },
 };
 
 export class DivisibilityStrategy implements MathStrategy {

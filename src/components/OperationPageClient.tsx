@@ -7,6 +7,7 @@ import { useTRPC } from "@/client/client";
 import { AnswerInput } from "@/components/math/AnswerInput";
 import { NumberKeyboard } from "@/components/math/NumberKeyboard";
 import { ProblemDisplay } from "@/components/math/ProblemDisplay";
+import { Button } from "@/components/ui/button";
 import { useUserDifficulty } from "@/hooks/useUserDifficulty";
 import { getStrategy } from "@/lib/math/strategies";
 import type { Difficulty, MathProblem } from "@/lib/math/types";
@@ -111,6 +112,7 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
   const [streak, setStreak] = useState(0);
   const [streakAnimation, setStreakAnimation] = useState(false);
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
+  const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
   const [userAnswer, setUserAnswer] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const trpc = useTRPC();
@@ -122,15 +124,18 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
   const strategy = getStrategy(operation);
 
   const generateNewProblem = useCallback(() => {
-    if (!strategy) return;
-
     const newProblem = strategy.generateProblem(difficulty);
     setProblem(newProblem);
-    setInput("");
-    setFeedback(null);
     setUserAnswer(null);
+    setFeedback(null);
+    setShowCorrectAnswer(false);
+    setInput("");
     setTimeout(() => inputRef.current?.focus(), 100);
   }, [strategy, difficulty]);
+
+  const handleNextProblem = () => {
+    generateNewProblem();
+  };
 
   useEffect(() => {
     generateNewProblem();
@@ -164,12 +169,12 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
           return newStreak;
         });
         fireConfetti();
+        setTimeout(generateNewProblem, 2000);
       } else {
         setFeedback("wrong");
         setStreak(0);
+        setShowCorrectAnswer(true);
       }
-
-      setTimeout(generateNewProblem, 2000);
     } catch (error) {
       console.error("Error submitting answer:", error);
     }
@@ -234,12 +239,36 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
               input={input}
               userAnswer={userAnswer}
               feedback={feedback}
+              disabled={showCorrectAnswer}
             />
+
+            {showCorrectAnswer && problem && (
+              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-sm font-medium text-blue-800 mb-2">
+                  Resposta correta:
+                </p>
+                <p className="text-lg font-bold text-blue-900">
+                  {Array.isArray(problem.correctAnswer)
+                    ? problem.correctAnswer.sort((a, b) => a - b).join(", ")
+                    : problem.correctAnswer}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="px-5 pb-8">
-          <NumberKeyboard onKeyPress={handleKeyPress} disabled={!!feedback} />
+          {showCorrectAnswer ? (
+            <Button
+              onClick={handleNextProblem}
+              className="w-full py-3"
+              size="lg"
+            >
+              Próximo
+            </Button>
+          ) : (
+            <NumberKeyboard onKeyPress={handleKeyPress} disabled={!!feedback} />
+          )}
         </div>
       </div>
     </main>
