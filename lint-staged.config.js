@@ -1,3 +1,3 @@
 module.exports = {
-  "*.{ts,tsx}": ["biome format --write"],
+  "*.{js,jsx,ts,tsx,json}": ["biome check --write"],
 };
