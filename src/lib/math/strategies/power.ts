@@ -12,9 +12,9 @@ const powerConfig = {
 };
 
 const sqrtConfig = {
-  easy: { min: 1, max: 25 }, // Perfect squares up to 5²
-  medium: { min: 1, max: 100 }, // Perfect squares up to 10²
-  hard: { min: 1, max: 400 }, // Perfect squares up to 20²
+  easy: { min: 4, max: 64 }, // Perfect squares from 2² to 8²
+  medium: { min: 81, max: 225 }, // Perfect squares from 9² to 15²
+  hard: { min: 256, max: 961 }, // Perfect squares from 16² to 31²
 };
 
 function getPerfectSquares(min: number, max: number): number[] {
@@ -44,7 +44,7 @@ export class PowerStrategy implements MathStrategy {
 
     const base = getRandomInt(config.baseMin, config.baseMax);
     const exponent = getRandomInt(config.exponentMin, config.exponentMax);
-    const correctAnswer = Math.pow(base, exponent);
+    const correctAnswer = base ** exponent;
 
     return {
       operands: [base, exponent],
