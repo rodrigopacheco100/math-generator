@@ -29,10 +29,7 @@ export class BinaryStrategy implements MathStrategy {
     const config = this.getConfig(difficulty) as BinaryOperationConfig;
 
     if (this.operation === "division") {
-      const divisor = getRandomInt(
-        config.operatorMin,
-        Math.min(10, config.operatorMax),
-      );
+      const divisor = getRandomInt(config.operatorMin, config.operatorMax);
       const quotient = getRandomInt(config.operatorMin, config.operatorMax);
       const dividend = divisor * quotient;
 
