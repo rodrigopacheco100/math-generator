@@ -21,6 +21,7 @@ const _geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Gerador de contas matemáticas",
   description: "Gerador de contas matemáticas",
+  icons: "./favicon.ico",
 };
 
 export default async function RootLayout({
