@@ -8,6 +8,7 @@ import { AnswerInput } from "@/components/math/AnswerInput";
 import { NumberKeyboard } from "@/components/math/NumberKeyboard";
 import { ProblemDisplay } from "@/components/math/ProblemDisplay";
 import { Button } from "@/components/ui/button";
+import { clearProblem, getProblem, saveProblem } from "@/hooks/useProblemCache";
 import { useUserDifficulty } from "@/hooks/useUserDifficulty";
 import { getStrategy } from "@/lib/math/strategies";
 import type { Difficulty, MathProblem } from "@/lib/math/types";
@@ -123,15 +124,24 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
 
   const strategy = getStrategy(operation);
 
-  const generateNewProblem = useCallback(() => {
-    const newProblem = strategy.generateProblem(difficulty);
-    setProblem(newProblem);
+  const generateNewProblem = useCallback(async () => {
+    const cached = await getProblem(operation, difficulty);
+    if (cached) {
+      setProblem({ ...cached, correctAnswer: cached.correctAnswer });
+    } else {
+      const newProblem = strategy.generateProblem(difficulty);
+      setProblem(newProblem);
+      await saveProblem(operation, difficulty, {
+        operands: newProblem.operands,
+        correctAnswer: newProblem.correctAnswer,
+      });
+    }
     setUserAnswer(null);
     setFeedback(null);
     setShowCorrectAnswer(false);
     setInput("");
     setTimeout(() => inputRef.current?.focus(), 100);
-  }, [strategy, difficulty]);
+  }, [strategy, difficulty, operation]);
 
   const handleNextProblem = () => {
     generateNewProblem();
@@ -150,6 +160,7 @@ export function OperationPageClient({ operation }: OperationPageClientProps) {
     const isCorrect = userAnswerNum === problem.correctAnswer;
 
     setUserAnswer(input);
+    clearProblem(operation, difficulty);
 
     try {
       await submitAnswer.mutateAsync({

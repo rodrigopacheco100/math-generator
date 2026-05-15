@@ -66,6 +66,11 @@ pnpm db:studio    # drizzle-kit studio
 - **Answer Storage**: Consistent `{ value: ... }` format in JSONB
 - **Validation**: Operation-specific Zod schemas with discriminated unions
 
+## Page Components
+- **OperationPageClient**: Componente genérico para operações binárias (soma, subtração, multiplicação, divisão, potência, raiz quadrada)
+- **DivisibilityPageClient**: Componente específico para divisibilidade (selecionador de múltiplos números)
+- Ambas as páginas devem implementar o sistema de cache
+
 ## UI Components
 - **Prefira sempre shadcn/ui**: Use componentes de `@/components/ui/` primeiro para construção de interfaces
 - **Se não existir no shadcn**: Me pergunte antes de usar outra lib
@@ -117,3 +122,14 @@ pnpm db:studio    # drizzle-kit studio
 - `src/server/db/schemas/`: Database schema definitions
 - `drizzle/`: Database migrations
 - `docker-compose.yml`: Local development database
+
+## Problem Cache System
+- **Location**: `src/hooks/useProblemCache.ts`
+- **Purpose**: Persist current problem in localStorage to restore on page refresh or difficulty change
+- **Encryption**: Data is encrypted server-side via TRPC (`src/server/trpc/routers/cache.ts`) using AES-256-GCM with env `NEXT_PUBLIC_CACHE_SECRET`
+- **Flow**:
+  1. On page load: check cache → restore problem if exists, else generate new
+  2. On answer submit: clear cache immediately
+  3. On generate new problem: save to cache (encrypts via TRPC)
+- **Cache Key Format**: `math-problem-{operation}-{difficulty}`
+- **Important**: Both `OperationPageClient` and `DivisibilityPageClient` must implement the cache system

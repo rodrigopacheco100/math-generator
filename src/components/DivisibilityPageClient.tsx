@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTRPC } from "@/client/client";
 import { DivisibilitySelector } from "@/components/math/DivisibilitySelector";
 import { Button } from "@/components/ui/button";
+import { clearProblem, getProblem, saveProblem } from "@/hooks/useProblemCache";
 import { useUserDifficulty } from "@/hooks/useUserDifficulty";
 import { getStrategy } from "@/lib/math/strategies";
 import type { Difficulty, MathProblem } from "@/lib/math/types";
@@ -27,9 +28,18 @@ export function DivisibilityPageClient() {
 
   const strategy = getStrategy("divisibility");
 
-  const generateNewProblem = useCallback(() => {
-    const newProblem = strategy.generateProblem(difficulty);
-    setProblem(newProblem);
+  const generateNewProblem = useCallback(async () => {
+    const cached = await getProblem("divisibility", difficulty);
+    if (cached) {
+      setProblem({ ...cached, correctAnswer: cached.correctAnswer });
+    } else {
+      const newProblem = strategy.generateProblem(difficulty);
+      setProblem(newProblem);
+      await saveProblem("divisibility", difficulty, {
+        operands: newProblem.operands,
+        correctAnswer: newProblem.correctAnswer,
+      });
+    }
     setSelectedDivisors([]);
     setFeedback(null);
     setShowCorrectAnswer(false);
@@ -49,6 +59,7 @@ export function DivisibilityPageClient() {
       return;
 
     try {
+      clearProblem("divisibility", difficulty);
       await submitAnswer.mutateAsync({
         operation: "divisibility",
         problem: { operands: problem.operands },
